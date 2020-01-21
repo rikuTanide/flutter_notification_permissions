@@ -37,9 +37,11 @@ public class NotificationPermissionsPlugin implements MethodChannel.MethodCallHa
         if (context instanceof Activity) {
           final Uri uri = Uri.fromParts("package", context.getPackageName(), null);
 
-          final Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+          final Intent intent = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
           intent.setData(uri);
-
+          intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+          intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+          intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
           context.startActivity(intent);
 
           result.success(null);

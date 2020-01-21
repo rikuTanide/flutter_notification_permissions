@@ -45,7 +45,7 @@ public class NotificationPermissionsPlugin implements MethodChannel.MethodCallHa
 
           // for Android 5-7
           intent.putExtra("app_package", BuildConfig.APPLICATION_ID);
-          intent.putExtra("app_uid", activity.getApplicationInfo().uid);
+          intent.putExtra("app_uid", context.getApplicationInfo().uid);
 
           // for Android O
           intent.putExtra("android.provider.extra.APP_PACKAGE", BuildConfig.APPLICATION_ID);

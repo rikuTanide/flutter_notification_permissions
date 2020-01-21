@@ -78,9 +78,7 @@ public class SwiftNotificationPermissionsPlugin: NSObject, FlutterPlugin {
 						  return
 					  }
 				  }
-				  let bundleID = Bundle.main.bundleIdentifier
-				  print(bundleID)
-                  if let url = URL(string:"App-Prefs:root=NOTIFICATIONS_ID&path=\(bundleID)") {
+                  if let url = URL(string:UIApplication.openSettingsURLString) {
                       if UIApplication.shared.canOpenURL(url) {
                           if #available(iOS 10.0, *) {
                               UIApplication.shared.open(url, options: [:], completionHandler: nil)

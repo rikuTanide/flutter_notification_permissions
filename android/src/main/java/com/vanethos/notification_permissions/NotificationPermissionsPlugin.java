@@ -35,13 +35,21 @@ public class NotificationPermissionsPlugin implements MethodChannel.MethodCallHa
     } else if ("requestNotificationPermissions".equalsIgnoreCase(call.method)) {
       if (PERMISSION_DENIED.equalsIgnoreCase(getNotificationPermissionStatus())) {
         if (context instanceof Activity) {
-          final Uri uri = Uri.fromParts("package", context.getPackageName(), null);
-
-          final Intent intent = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
-          intent.setData(uri);
+          Intent intent = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
+          // カテゴリは設定しなくてもいいかも
+          intent.addCategory(Intent.CATEGORY_DEFAULT);
+          // Flagは好みで設定
           intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
           intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
           intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+
+          // for Android 5-7
+          intent.putExtra("app_package", BuildConfig.APPLICATION_ID);
+          intent.putExtra("app_uid", activity.getApplicationInfo().uid);
+
+          // for Android O
+          intent.putExtra("android.provider.extra.APP_PACKAGE", BuildConfig.APPLICATION_ID);
+
           context.startActivity(intent);
 
           result.success(null);

@@ -35,20 +35,24 @@ public class NotificationPermissionsPlugin implements MethodChannel.MethodCallHa
     } else if ("requestNotificationPermissions".equalsIgnoreCase(call.method)) {
       if (PERMISSION_DENIED.equalsIgnoreCase(getNotificationPermissionStatus())) {
         if (context instanceof Activity) {
-          Intent intent = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
-          // カテゴリは設定しなくてもいいかも
-          intent.addCategory(Intent.CATEGORY_DEFAULT);
-          // Flagは好みで設定
+          Intent intent = new Intent();
+
+          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            intent.setAction(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
+            intent.putExtra(Settings.EXTRA_APP_PACKAGE, context.getPackageName());
+          } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+            intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS");
+            intent.putExtra("app_package", context.getPackageName());
+            intent.putExtra("app_uid", context.getApplicationInfo().uid);
+          } else {
+            intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+            intent.addCategory(Intent.CATEGORY_DEFAULT);
+            intent.setData(Uri.parse("package:" + context.getPackageName()));
+          }
+
           intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
           intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
           intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
-
-          // for Android 5-7
-          intent.putExtra("app_package", BuildConfig.APPLICATION_ID);
-          intent.putExtra("app_uid", context.getApplicationInfo().uid);
-
-          // for Android O
-          intent.putExtra("android.provider.extra.APP_PACKAGE", BuildConfig.APPLICATION_ID);
 
           context.startActivity(intent);
 
